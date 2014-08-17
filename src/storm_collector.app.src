@@ -1,0 +1,17 @@
+{application, storm_collector,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {modules, [
+             storm_collector_app,
+             storm_collector_sup,
+             storm_collector_server
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { storm_collector_app, []}},
+  {env, []}
+ ]}.
