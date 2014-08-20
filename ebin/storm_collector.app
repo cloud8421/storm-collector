@@ -1,7 +1,7 @@
 {application,storm_collector,
              [{description,[]},
               {vsn,"1"},
-              {modules,[storm_collector_app,storm_collector_server,
+              {modules,[parser,storm_collector_app,storm_collector_server,
                         storm_collector_sup]},
               {registered,[]},
               {applications,[kernel,stdlib]},
