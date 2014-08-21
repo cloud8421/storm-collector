@@ -10,7 +10,8 @@
   {registered, []},
   {applications, [
                   kernel,
-                  stdlib
+                  stdlib,
+                  hackney
                  ]},
   {mod, { storm_collector_app, []}},
   {env, []}

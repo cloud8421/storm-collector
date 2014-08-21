@@ -4,6 +4,6 @@
               {modules,[parser,storm_collector_app,storm_collector_server,
                         storm_collector_storage,storm_collector_sup]},
               {registered,[]},
-              {applications,[kernel,stdlib]},
+              {applications,[kernel,stdlib,hackney]},
               {mod,{storm_collector_app,[]}},
               {env,[]}]}.

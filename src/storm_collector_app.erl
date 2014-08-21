@@ -10,6 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
+    hackney:start(),
     storm_collector_sup:start_link().
 
 stop(_State) ->
