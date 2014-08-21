@@ -24,5 +24,6 @@ start_link() ->
 
 init([]) ->
    StormCollectorServer = ?CHILD(storm_collector_server, worker),
-    {ok, { {one_for_one, 5, 10}, [StormCollectorServer]} }.
+   StormCollectorStorage = ?CHILD(storm_collector_storage, worker),
+    {ok, { {one_for_one, 5, 10}, [StormCollectorServer, StormCollectorStorage]} }.
 

@@ -2,7 +2,7 @@
              [{description,[]},
               {vsn,"1"},
               {modules,[parser,storm_collector_app,storm_collector_server,
-                        storm_collector_sup]},
+                        storm_collector_storage,storm_collector_sup]},
               {registered,[]},
               {applications,[kernel,stdlib]},
               {mod,{storm_collector_app,[]}},
