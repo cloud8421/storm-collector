@@ -29,7 +29,9 @@ handle_info({tcp, _Socket, Data}, LSock) ->
   spawn(fun() ->
             Parsable = binary_to_list(Data),
             Item = parser:parse(Parsable),
-            storm_collector_storage:add(Item)
+            External = forecast_client:fetch(),
+            DataPoint = maps:merge(Item, External),
+            storm_collector_storage:add(DataPoint)
         end),
   {noreply, LSock};
 handle_info({tcp_closed, _Socket}, LSock) ->
