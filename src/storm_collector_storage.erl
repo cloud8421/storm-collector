@@ -21,7 +21,7 @@ all() ->
 
 %% callbacks
 handle_cast({add, Item}, Storage) ->
-  {noreply, [Item | Storage]}.
+  {noreply, add_item_with_timestamp(Item, Storage)}.
 
 handle_call(all, _From, Storage) ->
   {reply, Storage, Storage}.
@@ -34,3 +34,10 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
+
+%% utility
+
+add_item_with_timestamp(Item, Storage) ->
+  Now = calendar:universal_time(),
+  ItemWithTimestamp = maps:put(timestamp, Now, Item),
+  [ ItemWithTimestamp | Storage ].

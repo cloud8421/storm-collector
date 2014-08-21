@@ -28,11 +28,12 @@ handle_info(timeout, LSock) ->
 handle_info({tcp, _Socket, Data}, LSock) ->
   spawn(fun() ->
             Parsable = binary_to_list(Data),
-            parser:parse(Parsable)
+            Item = parser:parse(Parsable),
+            storm_collector_storage:add(Item)
         end),
   {noreply, LSock};
 handle_info({tcp_closed, _Socket}, LSock) ->
-  %% {ok, _LSock} = gen_tcp:accept(LSock),
+  {ok, _LSock} = gen_tcp:accept(LSock),
   {noreply, LSock}.
 
 terminate(_Reason, _State) ->
