@@ -7,24 +7,33 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+-record(state, {vent, items=[]}).
+
 start_link() ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 init([]) ->
-  {ok, []}.
+  {ok, VentPid} = gen_event:start_link(),
+  gen_event:add_handler(VentPid, log_handler, []),
+  State = #state{vent=VentPid, items=[]},
+  {ok, State}.
 
-add(Item) ->
-  gen_server:cast(?MODULE, {add, Item}).
+add(BinaryData) ->
+  gen_server:cast(?MODULE, {add, BinaryData}).
 
 all() ->
   gen_server:call(?MODULE, all).
 
 %% callbacks
-handle_cast({add, Item}, Storage) ->
-  {noreply, add_item_with_timestamp(Item, Storage)}.
+handle_cast({add, BinaryData}, #state{vent=VentPid, items=Items}) ->
+  Item = process_binary(BinaryData),
+  ItemWithTimestamp = add_timestamp_to_item(Item),
+  NewState = #state{vent=VentPid, items = [ItemWithTimestamp | Items]},
+  gen_event:notify(VentPid, {datapoint, ItemWithTimestamp}),
+  {noreply, NewState}.
 
-handle_call(all, _From, Storage) ->
-  {reply, Storage, Storage}.
+handle_call(all, _From, State = #state{vent=_VentPid, items=Items}) ->
+  {reply, Items, State}.
 
 handle_info(_Info, State) ->
   {noreply, State}.
@@ -37,7 +46,12 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% utility
 
-add_item_with_timestamp(Item, Storage) ->
+add_timestamp_to_item(Item) ->
   Now = calendar:universal_time(),
-  ItemWithTimestamp = maps:put(timestamp, Now, Item),
-  [ ItemWithTimestamp | Storage ].
+  Item#{timestamp => Now}.
+
+process_binary(BinaryData) ->
+  Parsable = binary_to_list(BinaryData),
+  Item = parser:parse(Parsable),
+  External = forecast_client:fetch(),
+  maps:merge(Item, External).
