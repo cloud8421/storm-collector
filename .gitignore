@@ -10,3 +10,4 @@
 /deps
 /.rebar
 .envrc
+/log

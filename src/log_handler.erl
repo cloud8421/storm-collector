@@ -9,7 +9,7 @@ init([]) ->
   {ok, []}.
 
 handle_event({datapoint, Datapoint}, State) ->
-  io:format("~s\n", [datapoint_to_logline(Datapoint)]),
+  lager:info("~s\n", [datapoint_to_logline(Datapoint)]),
   {ok, State};
 
 handle_event(_, State) ->

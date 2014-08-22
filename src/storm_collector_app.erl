@@ -10,6 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
+    lager:start(),
     hackney:start(),
     storm_collector_sup:start_link().
 

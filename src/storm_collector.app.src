@@ -11,7 +11,8 @@
   {applications, [
                   kernel,
                   stdlib,
-                  hackney
+                  hackney,
+                  lager
                  ]},
   {mod, { storm_collector_app, []}},
   {env, []}
