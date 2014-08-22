@@ -9,13 +9,17 @@
 
 -record(state, {vent, items=[]}).
 
+-define(DATA_FILE, "data/weather_datapoints.dets").
+
 start_link() ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 init([]) ->
+  {ok, WeatherTable} = dets:open_file(weather_data, [{file, ?DATA_FILE}, {type, set}]),
+
   {ok, VentPid} = gen_event:start_link(),
   gen_event:add_handler(VentPid, log_handler, []),
-  State = #state{vent=VentPid, items=[]},
+  State = #state{vent=VentPid, items=WeatherTable},
   {ok, State}.
 
 add(BinaryData) ->
@@ -25,14 +29,18 @@ all() ->
   gen_server:call(?MODULE, all).
 
 %% callbacks
-handle_cast({add, BinaryData}, #state{vent=VentPid, items=Items}) ->
+handle_cast({add, BinaryData}, State=#state{vent=VentPid, items=WeatherTable}) ->
   Item = process_binary(BinaryData),
-  ItemWithTimestamp = add_timestamp_to_item(Item),
-  NewState = #state{vent=VentPid, items = [ItemWithTimestamp | Items]},
-  gen_event:notify(VentPid, {datapoint, ItemWithTimestamp}),
-  {noreply, NewState}.
+  ItemWithMetadata = add_metadata_to_item(Item),
+  Uuid = maps:get(uuid, ItemWithMetadata),
+  dets:insert(WeatherTable, {Uuid, ItemWithMetadata}),
+  gen_event:notify(VentPid, {datapoint, ItemWithMetadata}),
+  {noreply, State}.
 
-handle_call(all, _From, State = #state{vent=_VentPid, items=Items}) ->
+handle_call(all, _From, State = #state{vent=_VentPid, items=WeatherTable}) ->
+  Items = dets:foldl(fun({_Uuid, Item}, Acc) ->
+   [Item | Acc]
+  end, [], WeatherTable),
   {reply, Items, State}.
 
 handle_info(_Info, State) ->
@@ -46,9 +54,10 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% utility
 
-add_timestamp_to_item(Item) ->
+add_metadata_to_item(Item) ->
+  Uuid = uuid:to_string(uuid:uuid1()),
   Now = calendar:universal_time(),
-  Item#{timestamp => Now}.
+  Item#{uuid => Uuid, timestamp => Now}.
 
 process_binary(BinaryData) ->
   Parsable = binary_to_list(BinaryData),
