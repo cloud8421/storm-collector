@@ -21,7 +21,8 @@ parse_response(Body) ->
   {<<"currently">>, Currently} = lists:keyfind(<<"currently">>, 1, Body),
   {<<"temperature">>, Temperature} = lists:keyfind(<<"temperature">>, 1, Currently),
   {<<"summary">>, Summary} = lists:keyfind(<<"summary">>, 1, Currently),
-  #{external_temperature => Temperature, summary => Summary}.
+  {<<"pressure">>, Pressure} = lists:keyfind(<<"pressure">>, 1, Currently),
+  #{external_temperature => Temperature, summary => Summary, pressure => Pressure}.
 
 api_key() ->
   os:getenv("FORECASTIO_API_KEY").

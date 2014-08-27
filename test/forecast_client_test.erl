@@ -27,5 +27,8 @@ parses_response_test() ->
                  {<<"cloudCover">>,0.56},
                  {<<"pressure">>,1013.02},
                  {<<"ozone">>,338.16}]}],
-  Expected = #{external_temperature => 60.9, summary => <<"Partly Cloudy">>},
+  Expected = #{external_temperature => 60.9,
+    summary => <<"Partly Cloudy">>,
+    pressure => 1013.02
+  },
   ?assert(forecast_client:parse_response(Response) == Expected).
