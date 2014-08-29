@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <Ethernet.h>
-#include<stdlib.h>
+#include <stdlib.h>
 
 //Sensors location
 
