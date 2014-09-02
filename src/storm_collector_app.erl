@@ -12,6 +12,7 @@
 start(_StartType, _StartArgs) ->
     lager:start(),
     hackney:start(),
+    leptus:start_listener(http, [{'_', [{api, undefined_state}]}]),
     storm_collector_sup:start_link().
 
 stop(_State) ->
