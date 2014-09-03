@@ -12,8 +12,7 @@ init(_Route, _Req, State) ->
 get("/datapoints", _Req, State) ->
   Datapoints = storm_collector_storage:all(),
   Serialized = storage_serializer:serialize(Datapoints),
-  Json = jsx:encode(Serialized),
-  {ok, Json, State}.
+  {ok, {json, Serialized}, State}.
 
 terminate(_Reason, _Route, _Req, _State) ->
   ok.
