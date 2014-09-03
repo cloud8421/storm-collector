@@ -36,9 +36,14 @@ Then you can:
     $ rebar compile
     $ FORECASTIO_API_KEY=xxx && make start
 
+Then from the erlang shell:
+    $ storm_collector_app:start([], []).
+
 This will install the needed dependencies, compile the application and start it.
 
 If everything is setup correctly, you should see data being logged. Data is stored in a DETS table, you can use `storm_collector_storage:all/0` to inspect it.
+
+To inspect the data in json format, you can go to: <http://localhost:8080/datapoints>.
 
 ## Customization
 
