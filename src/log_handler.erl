@@ -36,7 +36,9 @@ datapoint_to_logline(Datapoint) ->
   TempString = float_to_list(Temp, [{decimals, 1}]),
   BrightnessString = integer_to_list(Brightness),
   TimestampString = timestamp_to_string(Timestamp),
-  TimestampString ++ " " ++ "temp=" ++ TempString ++ " " ++ "brightness=" ++ BrightnessString.
+  "[timestamp: " ++ TimestampString ++ ", "
+  "temp: " ++ TempString ++ ", "
+  "brightness: " ++ BrightnessString ++ "]".
 
 timestamp_to_string({{Year, Month, Day}, {Hour, Minutes, Seconds}}) ->
   Date = lists:map(fun(X) -> integer_to_list(X) end, [Year, Month, Day]),
