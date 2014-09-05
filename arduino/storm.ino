@@ -55,7 +55,7 @@ void loop() {
   String temperatureStr = dtostrf(temperature,1,2,tmp);
   String brightnessStr = String(brightnessValue);
 
-  String dataPoint = "temp:f:" + temperatureStr + "|bright:i:" + brightnessStr;
+  String dataPoint = "temperature:f:" + temperatureStr + "|brightness:i:" + brightnessStr;
 
   //Data sent as an array to avoid incomplete packets  
   int n = dataPoint.length()+1;
