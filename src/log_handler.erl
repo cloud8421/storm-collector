@@ -5,6 +5,8 @@
 -export([init/1, handle_event/2, handle_call/2, handle_info/2, code_change/3,
 terminate/2]).
 
+-include("datapoint.hrl").
+
 init([]) ->
   {ok, []}.
 
@@ -29,9 +31,9 @@ terminate(_Reason, _State) ->
 
 %% utility
 datapoint_to_logline(Datapoint) ->
-  Timestamp = maps:get(timestamp, Datapoint),
-  Temp = maps:get(temp, Datapoint),
-  Brightness = maps:get(bright, Datapoint),
+  Timestamp = Datapoint#datapoint.timestamp,
+  Temp = Datapoint#datapoint.temperature,
+  Brightness = Datapoint#datapoint.brightness,
 
   TempString = float_to_list(Temp, [{decimals, 1}]),
   BrightnessString = integer_to_list(Brightness),

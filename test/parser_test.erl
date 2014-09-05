@@ -5,5 +5,5 @@
 -include_lib("eunit/include/eunit.hrl").
 
 parses_payload_test() ->
-  Expected = #{temp => 23.4, bright => 4000},
-  ?assert(parser:parse("temp:f:23.4|bright:i:4000") == Expected).
+  Expected = [{temperature,23.4}, {brightness,4000}],
+  ?assert(parser:parse("temperature:f:23.4|brightness:i:4000") == Expected).

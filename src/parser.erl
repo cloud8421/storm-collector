@@ -6,9 +6,7 @@ parse(Data) ->
   Pairs = string:tokens(Data, "|"),
   toPairs(Pairs, []).
 
-toPairs([], Acc) ->
-  ReversedList = lists:reverse(Acc),
-  maps:from_list(ReversedList);
+toPairs([], Acc) -> lists:reverse(Acc);
 toPairs([H|T], Acc) ->
   toPairs(T, [toPair(H) | Acc]).
 
@@ -16,9 +14,9 @@ toPair(Pair) ->
   Tokens = string:tokens(Pair, ":"),
   tokenize(Tokens).
 
-tokenize(["temp", "f", Value]) ->
+tokenize(["temperature", "f", Value]) ->
   {Temp, []} = string:to_float(Value),
-  {temp, Temp};
-tokenize(["bright", "i", Value]) ->
+  {temperature, Temp};
+tokenize(["brightness", "i", Value]) ->
   {Brightness, []} = string:to_integer(Value),
-  {bright, Brightness}.
+  {brightness, Brightness}.

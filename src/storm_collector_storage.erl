@@ -9,6 +9,8 @@
 
 -record(state, {vent, items=[], cache=[]}).
 
+-include("datapoint.hrl").
+
 -define(DATA_FILE, "data/weather_datapoints.dets").
 
 start_link() ->
@@ -32,12 +34,12 @@ all() ->
 
 %% callbacks
 handle_cast({add, BinaryData}, State=#state{vent=VentPid, items=WeatherTable, cache=WeatherCache}) ->
-  Item = process_binary(BinaryData),
-  ItemWithMetadata = add_metadata_to_item(Item),
-  Uuid = maps:get(uuid, ItemWithMetadata),
-  ets:insert(WeatherCache, {Uuid, ItemWithMetadata}),
-  dets:insert(WeatherTable, {Uuid, ItemWithMetadata}),
-  gen_event:notify(VentPid, {datapoint, ItemWithMetadata}),
+  ParsedData = process_binary(BinaryData),
+  Item = datapoint_builder:build(ParsedData),
+  Uuid = Item#datapoint.uuid,
+  ets:insert(WeatherCache, {Uuid, Item}),
+  dets:insert(WeatherTable, {Uuid, Item}),
+  gen_event:notify(VentPid, {datapoint, Item}),
   {noreply, State}.
 
 handle_call(all, _From, State = #state{vent=_VentPid, cache=WeatherCache}) ->
@@ -57,13 +59,6 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% utility
 
-add_metadata_to_item(Item) ->
-  Uuid = uuid:to_string(uuid:uuid1()),
-  Now = calendar:universal_time(),
-  Item#{uuid => Uuid, timestamp => Now}.
-
 process_binary(BinaryData) ->
   Parsable = binary_to_list(BinaryData),
-  Item = parser:parse(Parsable),
-  External = forecast_client:fetch(),
-  maps:merge(Item, External).
+  parser:parse(Parsable).
